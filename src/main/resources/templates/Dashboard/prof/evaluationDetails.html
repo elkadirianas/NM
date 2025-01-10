@@ -26,8 +26,10 @@
       <td th:text="${student.name}"></td>
       <td th:text="${student.surname}"></td>
       <td>
-        <input type="number" class="form-control" name="marks" th:attr="data-student-id=${student.id}" />
+        <input type="number" class="form-control" name="marks"
+               th:attr="data-student-id=${student.id}, data-evaluation-id=${evaluation.id}" />
       </td>
+
     </tr>
     </tbody>
   </table>
@@ -38,26 +40,42 @@
 <script>
   document.getElementById('submitMarks').addEventListener('click', function() {
     const marks = [];
+    let isValid = true;
+
     document.querySelectorAll('input[name="marks"]').forEach(input => {
+      const mark = parseFloat(input.value);
+      if (isNaN(mark)) {
+        isValid = false;
+        alert('Please enter valid marks for all students.');
+        return;
+      }
+
       marks.push({
         studentId: input.getAttribute('data-student-id'),
-        mark: input.value
+        evaluationId: input.getAttribute('data-evaluation-id'),
+        mark: mark
       });
     });
 
-    // Make a POST request to save marks (replace URL with your endpoint)
+    if (!isValid) return;
+
+    console.log(JSON.stringify(marks)); // Log the payload
+
     fetch('/Dashboard/prof/saveMarks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(marks)
-    }).then(response => {
-      if (response.ok) {
-        alert('Marks submitted successfully!');
-        location.reload();
-      } else {
-        alert('Error submitting marks.');
-      }
-    });
+    })
+            .then(response => {
+              if (response.ok) {
+                alert('Marks submitted successfully!');
+              } else {
+                response.text().then(errorMessage => {
+                  console.error(errorMessage); // Log error details
+                  alert('Error submitting marks.');
+                });
+              }
+            });
   });
 </script>
 </body>
