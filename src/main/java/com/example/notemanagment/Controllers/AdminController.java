@@ -40,7 +40,4 @@ public class AdminController {
         return "Dashboard/admin/index";
     }
 
-
-
-
 }
