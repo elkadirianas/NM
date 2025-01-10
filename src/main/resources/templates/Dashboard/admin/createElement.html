@@ -10,25 +10,35 @@
 <div class="container my-3">
     <h1 class="text-center mb-3">Create Element for Module: <span th:text="${module.name}"></span></h1>
 
+    <!-- Display error message if exists -->
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
     <form th:action="@{/Dashboard/admin/createElement}" method="post">
         <input type="hidden" name="moduleId" th:value="${module.id}"/>
 
         <div class="mb-3">
             <label for="name" class="form-label">Element Name</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Enter element name" required>
+            <input type="text" class="form-control" id="name" name="name"
+                   placeholder="Enter element name" th:value="${param.name}" required>
         </div>
 
         <div class="mb-3">
             <label for="coefficient" class="form-label">Coefficient</label>
-            <input type="number" step="0.01" class="form-control" id="coefficient" name="coefficient" placeholder="Enter coefficient (e.g., 0.30 for 30%)" required>
+            <input type="number" step="0.01" class="form-control" id="coefficient" name="coefficient"
+                   placeholder="Enter coefficient (e.g., 30 for 30%)" th:value="${param.coefficient}" required>
         </div>
 
         <div class="mb-3">
             <label for="professorId" class="form-label">Professor</label>
             <select class="form-select" id="professorId" name="professorId" required>
                 <option value="" disabled selected>Select a professor</option>
-                <option th:each="professor : ${professors}" th:value="${professor.id}" th:text="${professor.name}"></option>
+                <option th:each="professor : ${professors}"
+                        th:value="${professor.id}"
+                        th:text="${professor.name}"
+                        th:selected="${param.professorId == professor.id}">
+                </option>
             </select>
+
         </div>
 
         <button type="submit" class="btn btn-primary">Create Element</button>
