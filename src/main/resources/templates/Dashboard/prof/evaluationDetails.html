@@ -10,6 +10,7 @@
 <div class="container my-5">
   <h1 class="text-center mb-4" th:text="'Evaluation: ' + ${evaluation.evaluationMode}"></h1>
 
+  <!-- Table for students -->
   <table class="table table-bordered table-hover table-striped">
     <thead class="table-dark">
     <tr>
@@ -26,17 +27,20 @@
       <td th:text="${student.surname}"></td>
       <td>
         <input type="number" class="form-control" name="marks"
-               th:placeholder="${student.note}"
-               th:attr="data-student-id=${student.id}, data-evaluation-id=${evaluation.id}"
-               th:readonly="${evaluation.isValidated}" />
+               th:attr="data-student-id=${student.id}, data-evaluation-id=${evaluation.id},
+                    readonly=${evaluation.validated ? 'true' : null},
+                    placeholder=${student.note != null ? student.note : 0}" />
       </td>
+
+
     </tr>
     </tbody>
   </table>
 
-  <button class="btn btn-primary" id="submitMarks" th:disabled="${evaluation.isValidated}">Submit Marks</button>
-  <button class="btn btn-success" id="saveDefinitively" th:if="!${evaluation.isValidated}">Save Definitively</button>
+  <button class="btn btn-primary" id="submitMarks" th:disabled="${evaluation.validated}">Submit Marks</button>
+  <button class="btn btn-success" id="saveDefinitely" th:disabled="${evaluation.validated}">Save Definitely</button>
 </div>
+
 
 <script>
   document.getElementById('submitMarks').addEventListener('click', function () {
@@ -47,12 +51,9 @@
       const mark = input.value.trim();
       const placeholder = input.placeholder;
 
-      // If the input value hasn't changed from the placeholder, skip it
-      if (mark === placeholder) return;
-
       // Validate the mark
-      const numericMark = parseFloat(mark);
-      if (isNaN(numericMark)) {
+      const numericMark = mark === "" ? null : parseFloat(mark);
+      if (numericMark !== null && isNaN(numericMark)) {
         isValid = false;
         alert('Please enter valid marks for all students.');
         return;
@@ -82,18 +83,26 @@
   });
 
 
-  document.getElementById('saveDefinitively')?.addEventListener('click', function() {
-    fetch(`/Dashboard/prof/validateEvaluation?evaluationId=${evaluation.id}`, {
-      method: 'POST'
-    }).then(response => {
-      if (response.ok) {
-        alert('Evaluation saved definitively!');
-        location.reload();
-      } else {
-        alert('Error finalizing evaluation.');
-      }
-    });
+  document.getElementById('saveDefinitely').addEventListener('click', function () {
+    const evaluationId = document.querySelector('input[name="marks"]').getAttribute('data-evaluation-id');
+
+    fetch('/Dashboard/prof/saveDefinitely', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `evaluationId=${evaluationId}`
+    })
+            .then(response => {
+              if (response.ok) {
+                alert('Evaluation finalized successfully!');
+                location.reload(); // Reload the page to reflect changes
+              } else {
+                response.text().then(errorMessage => {
+                  alert(errorMessage);
+                });
+              }
+            });
   });
+
 </script>
 
 </body>

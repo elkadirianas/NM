@@ -76,10 +76,14 @@ public class evaluationDetails_Controller {
 
             // Fetch existing note or create a new one
             Note note = noteRepo.findByStudentAndEvaluation(student, evaluation).orElse(new Note());
-            if (note.getId() == null || submission.getMark() != null) {
-                note.setStudent(student);
-                note.setEvaluation(evaluation);
-                note.setValue(submission.getMark()); // Update the value only if a new mark is provided
+            note.setStudent(student);
+            note.setEvaluation(evaluation);
+
+            // Update note value only if submission contains a valid mark
+            if (submission.getMark() != null) {
+                note.setValue(submission.getMark());
+            } else if (note.getValue() == null) {
+                note.setValue(0.0); // Default to 0 if no value exists
             }
 
             // Save the note
@@ -88,17 +92,29 @@ public class evaluationDetails_Controller {
         return ResponseEntity.ok("Marks saved successfully!");
     }
 
-    @PostMapping("/validateEvaluation")
-    public ResponseEntity<String> validateEvaluation(@RequestParam("evaluationId") Long evaluationId) {
+
+    @PostMapping("/saveDefinitely")
+    public ResponseEntity<String> saveDefinitely(@RequestParam("evaluationId") Long evaluationId) {
+        // Fetch the evaluation
         Optional<Evaluation> evaluationOptional = evaluationRepo.findById(evaluationId);
         if (evaluationOptional.isEmpty()) {
-            return ResponseEntity.badRequest().body("Evaluation not found.");
+            return ResponseEntity.badRequest().body("Evaluation not found");
         }
 
         Evaluation evaluation = evaluationOptional.get();
-        evaluation.setIsValidated(true);
+
+        // Check if already validated
+        if (evaluation.isValidated()) {
+            return ResponseEntity.badRequest().body("Evaluation already finalized");
+        }
+
+        // Set validated to true
+        evaluation.setValidated(true);
         evaluationRepo.save(evaluation);
 
-        return ResponseEntity.ok("Evaluation validated.");
+        return ResponseEntity.ok("Evaluation finalized successfully!");
     }
+
+
+
 }

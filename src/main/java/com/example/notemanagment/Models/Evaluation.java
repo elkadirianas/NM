@@ -20,15 +20,15 @@ public class Evaluation {
     @Column(nullable = false)
     private Double coefficient;
 
-    @Column(nullable = false)
-    private Boolean isValidated = false;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean validated;
 
-    public Boolean getIsValidated() {
-        return isValidated;
+    public boolean isValidated() {
+        return validated;
     }
 
-    public void setIsValidated(Boolean isValidated) {
-        this.isValidated = isValidated;
+    public void setValidated(boolean validated) {
+        this.validated = validated;
     }
 
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
