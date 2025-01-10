@@ -29,7 +29,7 @@
       <td th:text="${module.id}"></td>
       <td th:text="${module.name}"></td>
       <td th:text="${module.code}"></td>
-      <td th:text="${module.semester}"></td>
+      <td th:text="${module.semester.name}"></td>
       <td>
         <a class="btn btn-info mb-1"
            th:href="@{/Dashboard/admin/ShowElements/{moduleId}(moduleId=${module.id})}">
