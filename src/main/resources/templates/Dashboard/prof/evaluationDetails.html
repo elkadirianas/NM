@@ -39,15 +39,33 @@
 </div>
 
 <script>
-  document.getElementById('submitMarks').addEventListener('click', function() {
+  document.getElementById('submitMarks').addEventListener('click', function () {
     const marks = [];
+    let isValid = true;
+
     document.querySelectorAll('input[name="marks"]').forEach(input => {
+      const mark = input.value.trim();
+      const placeholder = input.placeholder;
+
+      // If the input value hasn't changed from the placeholder, skip it
+      if (mark === placeholder) return;
+
+      // Validate the mark
+      const numericMark = parseFloat(mark);
+      if (isNaN(numericMark)) {
+        isValid = false;
+        alert('Please enter valid marks for all students.');
+        return;
+      }
+
       marks.push({
         studentId: input.getAttribute('data-student-id'),
         evaluationId: input.getAttribute('data-evaluation-id'),
-        mark: parseFloat(input.value) || 0
+        mark: numericMark
       });
     });
+
+    if (!isValid) return;
 
     fetch('/Dashboard/prof/saveMarks', {
       method: 'POST',
@@ -62,6 +80,7 @@
       }
     });
   });
+
 
   document.getElementById('saveDefinitively')?.addEventListener('click', function() {
     fetch(`/Dashboard/prof/validateEvaluation?evaluationId=${evaluation.id}`, {

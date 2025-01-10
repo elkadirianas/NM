@@ -74,17 +74,20 @@ public class evaluationDetails_Controller {
                 continue; // Skip invalid submissions
             }
 
-            // Check if the Note exists, otherwise create a new one
+            // Fetch existing note or create a new one
             Note note = noteRepo.findByStudentAndEvaluation(student, evaluation).orElse(new Note());
-            note.setStudent(student);
-            note.setEvaluation(evaluation);
-            note.setValue(submission.getMark());
+            if (note.getId() == null || submission.getMark() != null) {
+                note.setStudent(student);
+                note.setEvaluation(evaluation);
+                note.setValue(submission.getMark()); // Update the value only if a new mark is provided
+            }
 
-            // Save the Note
+            // Save the note
             noteRepo.save(note);
         }
         return ResponseEntity.ok("Marks saved successfully!");
     }
+
     @PostMapping("/validateEvaluation")
     public ResponseEntity<String> validateEvaluation(@RequestParam("evaluationId") Long evaluationId) {
         Optional<Evaluation> evaluationOptional = evaluationRepo.findById(evaluationId);

@@ -79,6 +79,4 @@ public class FieldsController {
         return "Dashboard/admin/fieldModules"; // Create this view
     }
 
-
-
 }
