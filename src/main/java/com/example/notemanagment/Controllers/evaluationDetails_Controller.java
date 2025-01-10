@@ -74,6 +74,11 @@ public class evaluationDetails_Controller {
                 continue; // Skip invalid submissions
             }
 
+            // Check if the mark is between 0 and 20
+            if (submission.getMark() != null && (submission.getMark() < 0 || submission.getMark() > 20)) {
+                return ResponseEntity.badRequest().body("Marks must be between 0 and 20 for student ID: " + submission.getStudentId());
+            }
+
             // Fetch existing note or create a new one
             Note note = noteRepo.findByStudentAndEvaluation(student, evaluation).orElse(new Note());
             note.setStudent(student);
@@ -91,7 +96,6 @@ public class evaluationDetails_Controller {
         }
         return ResponseEntity.ok("Marks saved successfully!");
     }
-
 
     @PostMapping("/saveDefinitely")
     public ResponseEntity<String> saveDefinitely(@RequestParam("evaluationId") Long evaluationId) {
@@ -114,6 +118,7 @@ public class evaluationDetails_Controller {
 
         return ResponseEntity.ok("Evaluation finalized successfully!");
     }
+
 
 
 

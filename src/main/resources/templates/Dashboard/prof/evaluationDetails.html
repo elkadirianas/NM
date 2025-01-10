@@ -53,10 +53,13 @@
 
       // Validate the mark
       const numericMark = mark === "" ? null : parseFloat(mark);
-      if (numericMark !== null && isNaN(numericMark)) {
-        isValid = false;
-        alert('Please enter valid marks for all students.');
-        return;
+      if (numericMark !== null) {
+        // Check if the mark is within the range 0 - 20
+        if (numericMark < 0 || numericMark > 20) {
+          isValid = false;
+          alert('Marks must be between 0 and 20.');
+          return;  // Exit early if invalid
+        }
       }
 
       marks.push({
