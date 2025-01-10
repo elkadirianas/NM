@@ -10,7 +10,6 @@
 <div class="container my-5">
   <h1 class="text-center mb-4" th:text="'Evaluation: ' + ${evaluation.evaluationMode}"></h1>
 
-  <!-- Table for students -->
   <table class="table table-bordered table-hover table-striped">
     <thead class="table-dark">
     <tr>
@@ -27,56 +26,56 @@
       <td th:text="${student.surname}"></td>
       <td>
         <input type="number" class="form-control" name="marks"
-               th:attr="data-student-id=${student.id}, data-evaluation-id=${evaluation.id}" />
+               th:placeholder="${student.note}"
+               th:attr="data-student-id=${student.id}, data-evaluation-id=${evaluation.id}"
+               th:readonly="${evaluation.isValidated}" />
       </td>
-
     </tr>
     </tbody>
   </table>
 
-  <button class="btn btn-primary" id="submitMarks">Submit Marks</button>
+  <button class="btn btn-primary" id="submitMarks" th:disabled="${evaluation.isValidated}">Submit Marks</button>
+  <button class="btn btn-success" id="saveDefinitively" th:if="!${evaluation.isValidated}">Save Definitively</button>
 </div>
 
 <script>
   document.getElementById('submitMarks').addEventListener('click', function() {
     const marks = [];
-    let isValid = true;
-
     document.querySelectorAll('input[name="marks"]').forEach(input => {
-      const mark = parseFloat(input.value);
-      if (isNaN(mark)) {
-        isValid = false;
-        alert('Please enter valid marks for all students.');
-        return;
-      }
-
       marks.push({
         studentId: input.getAttribute('data-student-id'),
         evaluationId: input.getAttribute('data-evaluation-id'),
-        mark: mark
+        mark: parseFloat(input.value) || 0
       });
     });
-
-    if (!isValid) return;
-
-    console.log(JSON.stringify(marks)); // Log the payload
 
     fetch('/Dashboard/prof/saveMarks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(marks)
-    })
-            .then(response => {
-              if (response.ok) {
-                alert('Marks submitted successfully!');
-              } else {
-                response.text().then(errorMessage => {
-                  console.error(errorMessage); // Log error details
-                  alert('Error submitting marks.');
-                });
-              }
-            });
+    }).then(response => {
+      if (response.ok) {
+        alert('Marks submitted successfully!');
+        location.reload();
+      } else {
+        alert('Error submitting marks.');
+      }
+    });
+  });
+
+  document.getElementById('saveDefinitively')?.addEventListener('click', function() {
+    fetch(`/Dashboard/prof/validateEvaluation?evaluationId=${evaluation.id}`, {
+      method: 'POST'
+    }).then(response => {
+      if (response.ok) {
+        alert('Evaluation saved definitively!');
+        location.reload();
+      } else {
+        alert('Error finalizing evaluation.');
+      }
+    });
   });
 </script>
+
 </body>
 </html>

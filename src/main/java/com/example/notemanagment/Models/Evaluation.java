@@ -20,6 +20,17 @@ public class Evaluation {
     @Column(nullable = false)
     private Double coefficient;
 
+    @Column(nullable = false)
+    private Boolean isValidated = false;
+
+    public Boolean getIsValidated() {
+        return isValidated;
+    }
+
+    public void setIsValidated(Boolean isValidated) {
+        this.isValidated = isValidated;
+    }
+
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Note> notes;
 
