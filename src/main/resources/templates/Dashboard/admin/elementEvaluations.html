@@ -48,12 +48,25 @@
         <tr>
           <th>Evaluation Mode</th>
           <th>Coefficient</th>
+          <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="evaluation : ${evaluations}">
           <td th:text="${evaluation.evaluationMode}"></td>
           <td th:text="${evaluation.coefficient}"></td>
+          <td>
+            <!-- Delete Button -->
+            <form th:action="@{/Dashboard/admin/deleteEvaluation/{evaluationId}(evaluationId=${evaluation.id})}"
+                  method="post"
+                  style="display: inline;">
+              <input type="hidden" name="_method" value="delete">
+              <button type="submit" class="btn btn-danger btn-sm"
+                      onclick="return confirm('Are you sure you want to delete this evaluation?');">
+                Delete
+              </button>
+            </form>
+          </td>
         </tr>
         </tbody>
       </table>

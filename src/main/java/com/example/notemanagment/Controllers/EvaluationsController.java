@@ -80,4 +80,27 @@ public class EvaluationsController {
         redirectAttributes.addFlashAttribute("successMessage", "Evaluation added successfully!");
         return "redirect:/Dashboard/admin/elementEvaluations/" + elementId;
     }
+
+    @PostMapping("/deleteEvaluation/{evaluationId}")
+    public String deleteEvaluation(
+            @PathVariable Long evaluationId,
+            RedirectAttributes redirectAttributes
+    ) {
+        // Find the evaluation by ID
+        Evaluation evaluation = evaluationRepo.findById(evaluationId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid evaluation ID"));
+
+        // Get the associated element ID for redirection
+        Long elementId = evaluation.getModuleElement().getId();
+
+        // Delete the evaluation
+        evaluationRepo.delete(evaluation);
+
+        // Add success message
+        redirectAttributes.addFlashAttribute("successMessage", "Evaluation deleted successfully!");
+
+        // Redirect to the evaluations page for the element
+        return "redirect:/Dashboard/admin/elementEvaluations/" + elementId;
+    }
+
 }
