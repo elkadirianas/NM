@@ -27,6 +27,8 @@ public class ProfHomeController {
 
     @Autowired
     private ProfRepo profRepo;
+    @Autowired
+    private StudentRepo studentRepo;
 
 
 
@@ -79,5 +81,48 @@ public class ProfHomeController {
         // Existing logic
         return "Dashboard/prof/listEtudiants";
     }
+    @GetMapping("/elementDetails")
+    public String showElementDetails(@RequestParam("elementId") Long elementId, Model model) {
+        // Find the module element
+        Optional<ModuleElement> elementOptional = moduleElementRepo.findById(elementId);
+        if (elementOptional.isEmpty()) {
+            System.out.println("Error: No module element found with ID " + elementId);
+            return "error";
+        }
+        ModuleElement element = elementOptional.get();
+
+        // Find students in the same field and semester
+        Field field = element.getModule().getField();
+        Semester semester = element.getModule().getSemester();
+        List<Student> students = studentRepo.findByFieldAndSemester(field, semester);
+
+        // Calculate average note for each student
+        Map<Student, Double> studentAverages = new HashMap<>();
+        for (Student student : students) {
+            double totalWeightedNote = 0.0;
+            double totalCoefficient = 0.0;
+
+            for (Evaluation evaluation : element.getEvaluations()) {
+                Note note = student.getNotes().stream()
+                        .filter(n -> n.getEvaluation().getId().equals(evaluation.getId()))
+                        .findFirst().orElse(null);
+
+                if (note != null) {
+                    totalWeightedNote += (evaluation.getCoefficient() / 100.0) * note.getValue();
+                    totalCoefficient += evaluation.getCoefficient();
+                }
+            }
+
+            double averageNote = totalCoefficient > 0 ? totalWeightedNote  : 0.0;
+            studentAverages.put(student, averageNote);
+        }
+
+        // Add data to the model
+        model.addAttribute("element", element);
+        model.addAttribute("studentAverages", studentAverages);
+
+        return "Dashboard/prof/elementDetails";
+    }
+
 
 }

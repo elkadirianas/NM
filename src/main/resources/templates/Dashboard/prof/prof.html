@@ -46,7 +46,7 @@
                 <th>Module</th>
                 <th>Nom de l'élément</th>
                 <th>Evaluation</th>
-
+                <th>Average</th>
             </tr>
             </thead>
             <tbody>
@@ -73,8 +73,13 @@
                         </ul>
                     </div>
                 </td>
-
-
+                <td>
+                    <!-- Button to view students and average notes -->
+                    <a class="btn btn-secondary btn-sm"
+                       th:href="@{/Dashboard/prof/elementDetails(elementId=${element.id})}">
+                        Element Marks
+                    </a>
+                </td>
             </tr>
             </tbody>
         </table>

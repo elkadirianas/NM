@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Element Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container my-5">
+  <h1 class="text-center mb-4" th:text="'Details for ' + ${element.module.name}"></h1>
+
+  <table class="table table-bordered table-hover table-striped">
+    <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Surname</th>
+      <th>Average Note</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${studentAverages}">
+      <td th:text="${entry.key.id}"></td>
+      <td th:text="${entry.key.name}"></td>
+      <td th:text="${entry.key.surname}"></td>
+      <td th:text="${entry.value}"></td>
+
+
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
