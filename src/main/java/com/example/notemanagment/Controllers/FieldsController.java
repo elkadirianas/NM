@@ -100,7 +100,10 @@ public class FieldsController {
             double totalCoefficient = 0.0;
 
             for (ModuleElement element : module.getModuleElements()) {
-                // Find the evaluation for this element
+                double elementTotalWeightedNote = 0.0;
+                double elementTotalCoefficient = 0.0;
+
+                // Iterate through evaluations in the module element
                 for (Evaluation evaluation : element.getEvaluations()) {
                     // Get the student's note for the evaluation
                     Note note = student.getNotes().stream()
@@ -108,13 +111,20 @@ public class FieldsController {
                             .findFirst().orElse(null);
 
                     if (note != null) {
-                        totalWeightedNote += (evaluation.getCoefficient() / 100.0) * note.getValue();
-                        totalCoefficient += evaluation.getCoefficient();
+                        elementTotalWeightedNote += note.getValue() * (evaluation.getCoefficient() / 100.0);
+                        elementTotalCoefficient += evaluation.getCoefficient();
                     }
+                }
+
+                // Add the element's contribution to the total
+                if (elementTotalCoefficient > 0) {
+                    totalWeightedNote += elementTotalWeightedNote;
+                    totalCoefficient += elementTotalCoefficient;
                 }
             }
 
-            double averageNote = totalCoefficient > 0 ? totalWeightedNote : 0.0;
+            // Calculate the final average for the student
+            double averageNote = totalCoefficient > 0 ? totalWeightedNote / (totalCoefficient / 100.0) : 0.0;
             studentAverages.put(student, averageNote);
         }
 
@@ -122,7 +132,6 @@ public class FieldsController {
         model.addAttribute("module", module);
         model.addAttribute("studentAverages", studentAverages);
 
-        return "Dashboard/admin/moduleStudents"; // Create this view
+        return "Dashboard/admin/moduleStudents"; // Ensure this view exists
     }
-
 }
