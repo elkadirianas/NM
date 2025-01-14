@@ -22,7 +22,6 @@
 </head>
 <body>
 <div class="container my-5">
-    <h1 class="text-center mb-4">NMNMMN</h1>
 
     <!-- Display professor information -->
     <div class="mb-5 text-center">
@@ -54,15 +53,15 @@
                 <td th:text="${element.module.semester.name}"></td>
                 <td th:text="${element.module.field.name}"></td>
                 <td th:text="${element.coefficient}"></td>
-                <td th:text="${element.name}"></td>
                 <td th:text="${element.module.name}"></td>
+                <td th:text="${element.name}"></td>
 
                 <td>
                     <!-- Dropdown for evaluations -->
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                            View Evaluations
+                            Evaluations
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li th:each="evaluation : ${element.evaluations}">
