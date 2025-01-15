@@ -22,10 +22,11 @@
                 <div class="row mb-3">
                     <label class="col-sm-4 col-form-label">Module Code</label>
                     <div class="col-sm-8">
-                        <input class="form-control" th:field="*{code}">
+                        <input class="form-control" th:field="*{code}" readonly>
                         <p th:if="${#fields.hasErrors('code')}" class="text-danger" th:errors="*{code}"></p>
                     </div>
                 </div>
+
                 <div class="row mb-3">
                     <label class="col-sm-4 col-form-label">Select Semester</label>
                     <div class="col-sm-8">
