@@ -32,13 +32,19 @@ public class ProfManagmentController {
 
 
     @GetMapping({"/AddProf"})
-    public String AddProf(Model model,@RequestParam int id){
+    public String AddProf(Model model, @RequestParam int id) {
         User user = userrepo.findById(id).orElse(null);
+        if (user == null) {
+            return "redirect:/Dashboard/admin";
+        }
         ProfessorDto profDto = new ProfessorDto();
-        model.addAttribute("profDto",profDto);
+        String generatedCode = "prof_" + id; // Generate the code
+        profDto.setCode(generatedCode); // Set the generated code in the DTO
+        model.addAttribute("profDto", profDto);
         model.addAttribute("user", user);
         return "Dashboard/admin/AddProf";
     }
+
 
     @PostMapping("/AddProf")
     public String Addprof(
